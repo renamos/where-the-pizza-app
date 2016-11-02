@@ -1,0 +1,31 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Where the Pizza App!</title>
+    <link rel="stylesheet" type="text/css" href="sweetalert-master/dist/sweetalert.css">
+    <link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+
+<body>
+    <div id="box">
+        <input type="text" id="A" class="pointA" placeholder="Enter your current location..." />
+        <button>Submit</button>
+    </div>
+
+    <div class="loading"><img src='images/wheresthepizza.gif' />
+    </div>
+    <div id="map"></div>
+    <div id="results">
+        <ul id="pizza"></ul>
+    </div>
+
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_-tUgrtucFTD8P_1tc7MBY1bbhDJm5OI&&libraries=places,geometry"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script src="sweetalert-master/dist/sweetalert.min.js"></script>
+    <script src="js/app.js"></script>
+</body>
+
+</html>
