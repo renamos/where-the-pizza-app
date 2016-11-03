@@ -220,6 +220,8 @@ $(document).ready(function () {
                         "color": "#D1D1B8"
                     }]
                 }]
+
+
             });
 
             //Add center marker to map
@@ -252,7 +254,6 @@ $(document).ready(function () {
                 marker.setAnimation(google.maps.Animation.DROP)
 
                 //Start request to get Pizza Places
-
 
                 var request = {
                     location: latLngA,
