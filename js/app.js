@@ -34,9 +34,10 @@ $(document).ready(function () {
         html += pizzaInfo.name
 
         if (pizzaInfo.opening_hours && pizzaInfo.opening_hours.open_now == true) {
-            html += ' <img class="icon" src="/images/open-icon.png"/>'
+            html += ' <img class="icon" src="../images/open-icon.png"/>'
             html += '</br>'
-        } /*else if (pizzaInfo.opening_hours && pizzaInfo.opening_hours.open_now == false) {
+        }
+        /*else if (pizzaInfo.opening_hours && pizzaInfo.opening_hours.open_now == false) {
     html += ' closed'
     html += '</br>'
 } else {

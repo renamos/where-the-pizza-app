@@ -61,7 +61,7 @@ ul {
 }
 
 li {
-    background: url(/images/pizza.png) left center no-repeat;
+    background: url(../images/pizza.png) left center no-repeat;
     padding-left: 30px;
     margin-top: 10px;
 }
