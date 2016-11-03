@@ -25,8 +25,9 @@ $(document).ready(function () {
     var fillList = function (places) {
         places.forEach(function (pizzaPlace, index) {
             $('#pizza').append(createPizzaHtml(pizzaPlace))
-        })
-    }
+        });
+
+    };
 
     var createPizzaHtml = function (pizzaInfo) {
         var html = ''
@@ -37,19 +38,8 @@ $(document).ready(function () {
             html += ' <img class="icon" src="../images/open-icon.png"/>'
             html += '</br>'
         }
-        /*else if (pizzaInfo.opening_hours && pizzaInfo.opening_hours.open_now == false) {
-    html += ' closed'
-    html += '</br>'
-} else {
-    html += ' ?'
-    html += '</br>'
-}*/
 
         html += '</li>'
-
-
-
-        console.log(pizzaInfo)
 
         return html
     }
@@ -74,7 +64,6 @@ $(document).ready(function () {
 
         return html
 
-        //http://maps.google.com/?q=term
     };
 
     var fillMarkers = function (markers) {
@@ -86,10 +75,6 @@ $(document).ready(function () {
                 lat: marker.geometry.location.lat(),
                 lng: marker.geometry.location.lng()
             };
-
-
-
-            //infowindow w/ content (ex.createInfoWindowHtml(marker))
 
             infowindow = new google.maps.InfoWindow({
                 content: ''
@@ -146,12 +131,9 @@ $(document).ready(function () {
 
     $("button").click(function () {
         pointA = $(".pointA").val();
-        console.log(pointA)
-        console.log(markersList)
-            //Delete all markers
+        //Delete all markers
         markersList.forEach(function (marker, index) {
             marker.setMap(null);
-            console.log(marker);
         })
 
         markersList = [];
@@ -231,6 +213,50 @@ $(document).ready(function () {
                 map: map
             });
 
+            var request = {
+                location: center,
+                radius: '3000',
+                query: 'pizza'
+            };
+
+
+            service = new google.maps.places.PlacesService(map);
+
+            service.textSearch(request, function (results) {
+
+                if (results.length == 0) {
+                    swal({
+                        title: "No pizza for you!",
+                        text: "Try another location.",
+                        type: "error",
+                        confirmButtonText: "Okay!"
+                    });
+
+                    return
+                }
+                fillList(results);
+                fillMarkers(results);
+
+
+                var myLatLng;
+
+                var bounds = new google.maps.LatLngBounds();
+                for (var i = 0; i < results.length; i++) {
+                    myLatLng = new google.maps.LatLng(results[i].geometry.location.lat(), results[i].geometry.location.lng());
+                    bounds.extend(myLatLng);
+                }
+
+
+
+                map.fitBounds(bounds);
+
+                placeA = null;
+
+                console.log(results);
+
+
+            });
+
             //Create 'places' autocomplete input
             var inputA = document.getElementById("A");
 
@@ -287,34 +313,14 @@ $(document).ready(function () {
                         bounds.extend(myLatLng);
                     }
 
-
-
                     map.fitBounds(bounds);
 
                     placeA = null;
-
-                    console.log(results);
-
 
                 });
             });
 
 
-
-
-
-
-
-
-
-            //delete markers on new search
-            //responsive
-
-
-            //make markers clickable, show more info, click address opens new google maps window with directions
-
-            //replace "open/close" with small icon
-            //map styling
             //Pizza place info list: phone number. Pizza place name is URL to website
 
 
