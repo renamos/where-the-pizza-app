@@ -22,6 +22,157 @@ $(document).ready(function () {
     var markersList = [];
 
 
+    var createMap = function (center) {
+        map = new google.maps.Map(document.getElementById('map'), {
+            zoom: 10,
+            center: center,
+            styles: [{
+                "featureType": "road",
+                "elementType": "geometry",
+                "stylers": [{
+                    "lightness": 100
+                }, {
+                    "visibility": "simplified"
+                }]
+            }, {
+                "featureType": "water",
+                "elementType": "geometry",
+                "stylers": [{
+                    "visibility": "on"
+                }, {
+                    "color": "#C6E2FF"
+                }]
+            }, {
+                "featureType": "poi",
+                "elementType": "geometry.fill",
+                "stylers": [{
+                    "color": "#C5E3BF"
+                }]
+            }, {
+                "featureType": "road",
+                "elementType": "geometry.fill",
+                "stylers": [{
+                    "color": "#D1D1B8"
+                }]
+            }]
+
+
+        });
+
+        //Add center marker to map
+        var marker = new google.maps.Marker({
+            position: center,
+            animation: google.maps.Animation.DROP,
+            map: map
+        });
+
+        var request = {
+            location: center,
+            radius: '3000',
+            query: 'pizza'
+        };
+
+
+        service = new google.maps.places.PlacesService(map);
+
+        service.textSearch(request, function (results) {
+
+            if (results.length == 0) {
+                swal({
+                    title: "No pizza for you!",
+                    text: "Try another location.",
+                    type: "error",
+                    confirmButtonText: "Okay!"
+                });
+
+                return
+            }
+            fillList(results);
+            fillMarkers(results);
+
+
+            var myLatLng;
+
+            var bounds = new google.maps.LatLngBounds();
+            for (var i = 0; i < results.length; i++) {
+                myLatLng = new google.maps.LatLng(results[i].geometry.location.lat(), results[i].geometry.location.lng());
+                bounds.extend(myLatLng);
+            }
+
+
+            map.fitBounds(bounds);
+
+            placeA = null;
+
+            console.log(results);
+
+
+        });
+
+        //Create 'places' autocomplete input
+        var inputA = document.getElementById("A");
+
+        autocomplete = new google.maps.places.Autocomplete(inputA);
+
+        autocomplete.bindTo("bounds", map);
+
+        autocomplete.addListener('place_changed', function () {
+            //Get the location and lat/long
+
+
+            placeA = autocomplete.getPlace();
+            latLngA = new google.maps.LatLng(placeA.geometry.location.lat(), placeA.geometry.location.lng())
+            //Clean the list
+            $('#pizza > li').remove();
+
+
+            //Change the position of the marker
+            marker.setPosition(placeA.geometry.location);
+            marker.setVisible(true);
+            marker.setAnimation(google.maps.Animation.DROP)
+
+            //Start request to get Pizza Places
+
+            var request = {
+                location: latLngA,
+                radius: '3000',
+                query: 'pizza'
+            };
+
+            service = new google.maps.places.PlacesService(map);
+
+            service.textSearch(request, function (results) {
+
+                if (results.length == 0) {
+                    swal({
+                        title: "No pizza for you!",
+                        text: "Try another location.",
+                        type: "error",
+                        confirmButtonText: "Okay!"
+                    });
+
+                    return
+                }
+                fillList(results);
+                fillMarkers(results);
+
+
+                var myLatLng;
+
+                var bounds = new google.maps.LatLngBounds();
+                for (var i = 0; i < results.length; i++) {
+                    myLatLng = new google.maps.LatLng(results[i].geometry.location.lat(), results[i].geometry.location.lng());
+                    bounds.extend(myLatLng);
+                }
+
+                map.fitBounds(bounds);
+
+                placeA = null;
+
+            });
+        })
+    };
+
     var fillList = function (places) {
         places.forEach(function (pizzaPlace, index) {
             $('#pizza').append(createPizzaHtml(pizzaPlace))
@@ -101,7 +252,6 @@ $(document).ready(function () {
     }
 
 
-
     var buildURL = function () {
         var url = ""
         url += "http://maps.googleapis.com/maps/api/distancematrix/json?units=imperial&origins="
@@ -160,7 +310,6 @@ $(document).ready(function () {
     };
 
     navigator.geolocation.getCurrentPosition(
-
         function (response) {
             //Create map
             $('#box').show();
@@ -170,161 +319,23 @@ $(document).ready(function () {
                 lat: response.coords.latitude,
                 lng: response.coords.longitude
             };
-            map = new google.maps.Map(document.getElementById('map'), {
-                zoom: 10,
-                center: center,
-                styles: [{
-                    "featureType": "road",
-                    "elementType": "geometry",
-                    "stylers": [{
-                        "lightness": 100
-                    }, {
-                        "visibility": "simplified"
-                    }]
-                }, {
-                    "featureType": "water",
-                    "elementType": "geometry",
-                    "stylers": [{
-                        "visibility": "on"
-                    }, {
-                        "color": "#C6E2FF"
-                    }]
-                }, {
-                    "featureType": "poi",
-                    "elementType": "geometry.fill",
-                    "stylers": [{
-                        "color": "#C5E3BF"
-                    }]
-                }, {
-                    "featureType": "road",
-                    "elementType": "geometry.fill",
-                    "stylers": [{
-                        "color": "#D1D1B8"
-                    }]
-                }]
 
+            createMap(center);
 
-            });
-
-            //Add center marker to map
-            var marker = new google.maps.Marker({
-                position: center,
-                animation: google.maps.Animation.DROP,
-                map: map
-            });
-
-            var request = {
-                location: center,
-                radius: '3000',
-                query: 'pizza'
+        },
+        function (err) {
+            $('#box').show();
+            $('.loading').remove();
+            var center = {
+                lat: 47.608013,
+                lng: -122.335167
             };
-
-
-            service = new google.maps.places.PlacesService(map);
-
-            service.textSearch(request, function (results) {
-
-                if (results.length == 0) {
-                    swal({
-                        title: "No pizza for you!",
-                        text: "Try another location.",
-                        type: "error",
-                        confirmButtonText: "Okay!"
-                    });
-
-                    return
-                }
-                fillList(results);
-                fillMarkers(results);
-
-
-                var myLatLng;
-
-                var bounds = new google.maps.LatLngBounds();
-                for (var i = 0; i < results.length; i++) {
-                    myLatLng = new google.maps.LatLng(results[i].geometry.location.lat(), results[i].geometry.location.lng());
-                    bounds.extend(myLatLng);
-                }
-
-
-
-                map.fitBounds(bounds);
-
-                placeA = null;
-
-                console.log(results);
-
-
-            });
-
-            //Create 'places' autocomplete input
-            var inputA = document.getElementById("A");
-
-            autocomplete = new google.maps.places.Autocomplete(inputA);
-
-            autocomplete.bindTo("bounds", map);
-
-            autocomplete.addListener('place_changed', function () {
-                //Get the location and lat/long
-
-
-                placeA = autocomplete.getPlace();
-                latLngA = new google.maps.LatLng(placeA.geometry.location.lat(), placeA.geometry.location.lng())
-                    //Clean the list
-                $('#pizza > li').remove();
-
-
-                //Change the position of the marker
-                marker.setPosition(placeA.geometry.location);
-                marker.setVisible(true);
-                marker.setAnimation(google.maps.Animation.DROP)
-
-                //Start request to get Pizza Places
-
-                var request = {
-                    location: latLngA,
-                    radius: '3000',
-                    query: 'pizza'
-                };
-
-                service = new google.maps.places.PlacesService(map);
-
-                service.textSearch(request, function (results) {
-
-                    if (results.length == 0) {
-                        swal({
-                            title: "No pizza for you!",
-                            text: "Try another location.",
-                            type: "error",
-                            confirmButtonText: "Okay!"
-                        });
-
-                        return
-                    }
-                    fillList(results);
-                    fillMarkers(results);
-
-
-                    var myLatLng;
-
-                    var bounds = new google.maps.LatLngBounds();
-                    for (var i = 0; i < results.length; i++) {
-                        myLatLng = new google.maps.LatLng(results[i].geometry.location.lat(), results[i].geometry.location.lng());
-                        bounds.extend(myLatLng);
-                    }
-
-                    map.fitBounds(bounds);
-
-                    placeA = null;
-
-                });
-            });
-
+            createMap(center);
 
             //Pizza place info list: phone number. Pizza place name is URL to website
-
 
 
         });
 
 });
+
