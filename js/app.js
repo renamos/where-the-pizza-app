@@ -183,7 +183,14 @@ $(document).ready(function () {
     var createPizzaHtml = function (pizzaInfo) {
         var html = ''
         html += '<li>'
+        html += '<a target="_blank" href="'
+        html += 'http://maps.google.com/maps?&z=10&q='
         html += pizzaInfo.name
+        html += '+'
+        html += pizzaInfo.formatted_address
+        html += '">'
+        html += pizzaInfo.name
+        html += '</a>'
 
         if (pizzaInfo.opening_hours && pizzaInfo.opening_hours.open_now == true) {
             html += ' <img class="icon" src="images/open-icon.png"/>'
